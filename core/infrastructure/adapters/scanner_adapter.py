@@ -1,7 +1,9 @@
 from core.application.use_cases import generate_dns_report
 from core.infrastructure.scanners.google_dorks import perform_dorks
+from core.infrastructure.scanners.nmap_scan import perform_nmap_scan
+from core.infrastructure.scanners.whois_scan import perform_whois_scan
 
-# Función que se llama desde la vista DNSScanView
+# DNS
 def get_dns_report(domain: str) -> dict:
     report = generate_dns_report(domain)
     return {
@@ -12,7 +14,7 @@ def get_dns_report(domain: str) -> dict:
         "nmap": report.nmap
     }
 
-# Función que se llama desde la vista GoogleDorksView
+# Google Dorks
 def search_google_dorks(query: str) -> list:
     results = perform_dorks(query)
     return [
@@ -23,3 +25,11 @@ def search_google_dorks(query: str) -> list:
         }
         for r in results
     ]
+
+# Nmap
+def scan_nmap(ip: str) -> dict:
+    return perform_nmap_scan(ip)
+
+# WHOIS
+def scan_whois(domain: str) -> dict:
+    return perform_whois_scan(domain)

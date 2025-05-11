@@ -1,11 +1,14 @@
 from django.urls import path
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-class PingView(APIView):
-    def get(self, request):
-        return Response({"status": "ok"})
+from .views import (
+    DNSScanView,
+    GoogleDorksView,
+    NmapScanView,
+    WhoisScanView
+)
 
 urlpatterns = [
-    path("test/", PingView.as_view(), name="test"),
+    path('scan/dns/', DNSScanView.as_view(), name='scan-dns'),
+    path('scan/google/', GoogleDorksView.as_view(), name='scan-google'),
+    path('scan/nmap/', NmapScanView.as_view(), name='scan-nmap'),
+    path('scan/whois/', WhoisScanView.as_view(), name='scan-whois'),
 ]

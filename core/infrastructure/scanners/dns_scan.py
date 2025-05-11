@@ -59,24 +59,30 @@ class DNSResolver:
         return list(set(ips))
 
     def scan_with_nmap(self):
+        print(f"🛠️ Ejecutando Nmap para: {self.domain}")
         try:
             ips = self.extract_ips_for_scan()
+            print(f"🧠 IPs encontradas: {ips}")
             for ip in ips:
                 try:
                     xml_output = f"/tmp/nmap_{ip}.xml"
+                    print(f"⏳ Escaneando {ip}...")
                     subprocess.run(
-                        ["nmap", "-A", "-Pn", "-T4", "-oX", xml_output, ip],
+                        ["nmap", "-F", "-T4", "-Pn", "-oX", xml_output, ip],
                         check=True,
-                        capture_output=True
+                        capture_output=True,
+                        timeout=10  # ⏱️ Máximo 10 segundos por IP
                     )
                     self.parse_nmap(xml_output)
                     os.remove(xml_output)
+                    print(f"✅ Escaneo de {ip} completado")
+                except subprocess.TimeoutExpired:
+                    print(f"⏱️ Nmap TIMEOUT en {ip}")
                 except subprocess.CalledProcessError as e:
-                    print(f"⚠️ Error al ejecutar Nmap: {e}")
+                    print(f"⚠️ Error al ejecutar Nmap en {ip}: {e}")
         except Exception as e:
             print(f"❌ Error general en escaneo con Nmap: {e}")
         finally:
-            # 👇 Esto asegura que siempre se genere el archivo
             self.export_to_json()
 
     def parse_nmap(self, xml_path):
